@@ -1,8 +1,9 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.contrib import auth, messages
 from django.urls import reverse
-
+from django.contrib.auth.decorators import login_required
 # Create your views here.
+from baskets.models import Basket
 from users.forms import UserLoginForm, UserRegisterForm, UserProfileForm
 
 
@@ -42,9 +43,10 @@ def register(request):
     return render(request, 'users/register.html', context)
 
 
+@login_required
 def profile(request):
     if request.method == 'POST':
-        form = UserProfileForm(data=request.POST,instance=request.user, files=request.FILES)
+        form = UserProfileForm(data=request.POST, instance=request.user, files=request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, 'Вы успешно обновили профиль')
@@ -56,8 +58,10 @@ def profile(request):
 
     context = {
         'title': 'GeekShop - Profile',
-        'form': form
-            # UserProfileForm(instance=request.user)
+        'form': form,
+        'baskets': Basket.objects.filter(user=request.user),
+        'total_quantity': sum(item.quantity for item in Basket.objects.filter(user=request.user)),
+        'total_summary': sum(item.product.price * item.quantity for item in Basket.objects.filter(user=request.user)),
     }
     return render(request, 'users/profile.html', context)
 
