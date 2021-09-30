@@ -1,4 +1,4 @@
-import basket as basket
+
 from django.db import models
 
 from users.models import User
@@ -23,3 +23,13 @@ class Basket(models.Model):
 
     def sum(self):
         return self.quantity * self.product.price
+
+    @property
+    def get_baskets(self):
+        return Basket.objects.filter(user=self.user)
+
+    def total_summary(self):
+        return sum(item.sum() for item in self.get_baskets)
+
+    def total_quantity(self):
+        return sum(item.quantity for item in self.get_baskets)
