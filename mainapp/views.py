@@ -8,7 +8,7 @@ from mainapp.models import Product,CategoryProduct
 # with open('mainapp/fixtures/products.json', 'r') as f:
 #     prod = json.load(f)
 
-date = datetime.now() + timedelta(hours=3)
+date = datetime.now()
 
 
 # Create your views here.

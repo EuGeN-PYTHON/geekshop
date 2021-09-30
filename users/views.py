@@ -1,9 +1,10 @@
 from django.shortcuts import render, HttpResponseRedirect
-from django.contrib import auth
+from django.contrib import auth, messages
 from django.urls import reverse
-
+from django.contrib.auth.decorators import login_required
 # Create your views here.
-from users.forms import UserLoginForm, UserRegisterForm
+from baskets.models import Basket
+from users.forms import UserLoginForm, UserRegisterForm, UserProfileForm
 
 
 def login(request):
@@ -16,8 +17,6 @@ def login(request):
             if user.is_active:
                 auth.login(request, user)
                 return HttpResponseRedirect(reverse('index'))
-        else:
-            print(form.errors)
     else:
         form = UserLoginForm()
     context = {
@@ -32,17 +31,39 @@ def register(request):
         form = UserRegisterForm(data=request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Вы успешно зарегистрировались')
             return HttpResponseRedirect(reverse('users:login'))
-        else:
-            print(form.errors)
     else:
         form = UserRegisterForm()
     context = {
-        'title': ' Geekshop - Регистрация',
+        'title': ' GeekShop - Регистрация',
         'form': form
 
     }
     return render(request, 'users/register.html', context)
+
+
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        form = UserProfileForm(data=request.POST, instance=request.user, files=request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Вы успешно обновили профиль')
+            return HttpResponseRedirect(reverse('users:profile'))
+        else:
+            print(form.errors)
+    else:
+        form = UserProfileForm(instance=request.user)
+
+    context = {
+        'title': 'GeekShop - Profile',
+        'form': form,
+        'baskets': Basket.objects.filter(user=request.user),
+        'total_quantity': sum(item.quantity for item in Basket.objects.filter(user=request.user)),
+        'total_summary': sum(item.product.price * item.quantity for item in Basket.objects.filter(user=request.user)),
+    }
+    return render(request, 'users/profile.html', context)
 
 
 def logout(request):
