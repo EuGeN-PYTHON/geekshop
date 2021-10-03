@@ -6,9 +6,9 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from admins.forms import UserAdminRegisterForm, UserAdminProfileForm, CategoryAdminRegisterForm, \
-    CategoryAdminProfileForm
+    CategoryAdminProfileForm, ProductAdminRegisterForm, ProductAdminProfileForm
 from geekshop.mixin import CustomDispatchMixin
-from mainapp.models import CategoryProduct
+from mainapp.models import CategoryProduct, Product
 from users.models import User
 
 
@@ -104,6 +104,54 @@ class CategoryDeleteView(DeleteView, CustomDispatchMixin):
     model = CategoryProduct
     template_name = 'admins/admin-category-update-delete.html'
     success_url = reverse_lazy('admins:admins_category')
+
+    # Переопределение метода delete (установка "флага" is_active)
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.is_active = False
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class ProductListView(ListView, CustomDispatchMixin):
+    model = Product
+    template_name = 'admins/admin-product-read.html'
+    context_object_name = 'products'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(ProductListView, self).get_context_data(**kwargs)
+        context['title'] = 'Админка | Товары'
+        return context
+
+
+class ProductCreateView(CreateView, CustomDispatchMixin):
+    model = Product
+    template_name = 'admins/admin-product-create.html'
+    form_class = ProductAdminRegisterForm
+    success_url = reverse_lazy('admins:admins_product')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(ProductCreateView, self).get_context_data(**kwargs)
+        context['title'] = 'Админка | Создание товара'
+        return context
+
+
+class ProductUpdateView(UpdateView, CustomDispatchMixin):
+    model = Product
+    template_name = 'admins/admin-product-update-delete.html'
+    form_class = ProductAdminProfileForm
+    success_url = reverse_lazy('admins:admins_product')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(ProductUpdateView, self).get_context_data(**kwargs)
+        context['title'] = 'Админка | Редактирование товара'
+        return context
+
+
+class ProductDeleteView(DeleteView, CustomDispatchMixin):
+    model = Product
+    template_name = 'admins/admin-product-update-delete.html'
+    success_url = reverse_lazy('admins:admins_product')
 
     # Переопределение метода delete (установка "флага" is_active)
     def delete(self, request, *args, **kwargs):
