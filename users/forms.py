@@ -22,7 +22,7 @@ class UserLoginForm(AuthenticationForm):
 class UserRegisterForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
+        fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2', 'image')
 
     def __init__(self, *args, **kwargs):
         super(UserRegisterForm, self).__init__(*args, **kwargs)
@@ -55,6 +55,6 @@ class UserProfileForm(UserChangeForm):
     def clean_image(self):
         if self.fields['image']:
             data = self.cleaned_data['image']
-            if data.size > 1024 * 1024:
+            if data.size > (1024 * 1024):
                 raise forms.ValidationError('Файл слишком большой')
             return data

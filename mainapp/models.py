@@ -5,6 +5,14 @@ from django.db import models
 class CategoryProduct(models.Model):
     name = models.CharField(max_length=64,unique=True)
     description = models.TextField(blank=True)
+    is_active = models.BooleanField(
+        'active',
+        default=True,
+        help_text=(
+            'Designates whether this user should be treated as active. '
+            'Unselect this instead of deleting accounts.'
+        ),
+    )
 
     def __str__(self):
         return self.name
