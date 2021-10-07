@@ -51,17 +51,15 @@ def profile(request):
             form.save()
             messages.success(request, 'Вы успешно обновили профиль')
             return HttpResponseRedirect(reverse('users:profile'))
-        else:
-            print(form.errors)
+        # else:
+        #     messages.error(request, 'Профиль не сохранен')
     else:
         form = UserProfileForm(instance=request.user)
 
     context = {
         'title': 'GeekShop - Profile',
         'form': form,
-        'baskets': Basket.objects.filter(user=request.user),
-        'total_quantity': sum(item.quantity for item in Basket.objects.filter(user=request.user)),
-        'total_summary': sum(item.product.price * item.quantity for item in Basket.objects.filter(user=request.user)),
+        'baskets': Basket.objects.filter(user=request.user)
     }
     return render(request, 'users/profile.html', context)
 

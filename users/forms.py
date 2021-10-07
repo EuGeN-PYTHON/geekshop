@@ -1,7 +1,5 @@
-from cProfile import label
-
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm,UserCreationForm,UserChangeForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
 
 
 from users.models import User
@@ -11,21 +9,20 @@ class UserLoginForm(AuthenticationForm):
 
     class Meta:
         model = User
-        fields = ('username','password')
+        fields = ('username', 'password')
 
-
-    def __init__(self,*args,**kwargs):
-        super(UserLoginForm, self).__init__(*args,**kwargs)
+    def __init__(self, *args, **kwargs):
+        super(UserLoginForm, self).__init__(*args, **kwargs)
         self.fields['username'].widget.attrs['placeholder'] = 'Введите имя пользователя'
         self.fields['password'].widget.attrs['placeholder'] = 'Введите пароль'
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control py-4'
 
+
 class UserRegisterForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2',)
-
+        fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2', 'image')
 
     def __init__(self, *args, **kwargs):
         super(UserRegisterForm, self).__init__(*args, **kwargs)
@@ -56,7 +53,8 @@ class UserProfileForm(UserChangeForm):
         self.fields['image'].widget.attrs['class'] = 'custom-file-input'
 
     def clean_image(self):
-        data = self.cleaned_data['image']
-        if data.size > 2048000:
-            raise forms.ValidationError('Файл слишком большой')
-        return data
+        if self.fields['image']:
+            data = self.cleaned_data['image']
+            if data.size > (1024 * 1024):
+                raise forms.ValidationError('Файл слишком большой')
+            return data
