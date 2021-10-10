@@ -19,11 +19,11 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from mainapp.views import index
+from mainapp.views import IndexList
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', index, name='index'),
+    path('', IndexList.as_view(), name='index'),
     path('products/', include('mainapp.urls', namespace='mainapp')),
     path('users/', include('users.urls', namespace='users')),
     path('baskets/', include('baskets.urls', namespace='baskets')),
