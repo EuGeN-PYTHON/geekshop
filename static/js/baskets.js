@@ -12,4 +12,20 @@ window.onload = function(){
         });
         event.preventDefault()
     });
+
+
+    $('.product_items').on('click', 'button[type="submit"]', function(){
+        let href = event.target;
+        console.log(href.name);
+
+        $.ajax({
+            url: '/baskets/add/'+href.name+'/',
+        // //     // headers: {'X-CSRFToken': csrftoken},
+        // //     // method: 'POST',
+            success: function (data){
+                $('.product_items').html(data.result)
+            },
+        });
+        event.preventDefault()
+    });
 };

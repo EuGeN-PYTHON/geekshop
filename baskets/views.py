@@ -27,16 +27,17 @@ class BasketAdd(CustomAuthMixin):
     model = Basket
 
     def get(self, request, *args, **kwargs):
-        user_select = request.user
-        product = Product.objects.get(id=self.kwargs['product_id'])
-        baskets = Basket.objects.filter(user=user_select, product=product)
-        if not baskets.exists():
-            Basket.objects.create(user=user_select, product=product, quantity=1)
-        else:
-            basket = baskets.first()
-            basket.quantity += 1
-            basket.save()
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        # if request.is_ajax():
+            user_select = request.user
+            product = Product.objects.get(id=self.kwargs['product_id'])
+            baskets = Basket.objects.filter(user=user_select, product=product)
+            if not baskets.exists():
+                Basket.objects.create(user=user_select, product=product, quantity=1)
+            else:
+                basket = baskets.first()
+                basket.quantity += 1
+                basket.save()
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 # @login_required
@@ -55,7 +56,7 @@ class BasketAdd(CustomAuthMixin):
 class BasketEdit(CustomAuthMixin):
     model = Basket
 
-    def get(self, request,  *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         if request.is_ajax():
             basket = Basket.objects.get(id=self.kwargs['id'])
             if self.kwargs['quantity'] > 0:
