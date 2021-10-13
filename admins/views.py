@@ -1,7 +1,8 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 
 # Create your views here.
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
@@ -106,11 +107,22 @@ class CategoryDeleteView(DeleteView, CustomDispatchMixin):
     success_url = reverse_lazy('admins:admins_category')
 
     # Переопределение метода delete (установка "флага" is_active)
+    @meta
     def delete(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.object.is_active = False
-        self.object.save()
-        return HttpResponseRedirect(self.get_success_url())
+
+        category = CategoryProduct.objects.get(id=self.request['pk'])
+
+        if category.is_active:
+            category.is_active = False
+        else:
+            category.is_active = True
+
+        context = {
+            'categories': CategoryProduct.objects.all()
+        }
+        result = render_to_string('admins/admins_category_table.html', context, request=self.request)
+        return JsonResponse({'result': result})
+        # return HttpResponseRedirect(self.get_success_url())
 
 
 class ProductListView(ListView, CustomDispatchMixin):
