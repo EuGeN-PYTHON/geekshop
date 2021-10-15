@@ -7,7 +7,7 @@ window.onload = function () {
             console.log(csrf_token);
 
             $.ajax({
-                type: 'POST',
+                type: 'delete',
                 headers: {"X-CSRFToken": csrf_token},
                 url: '/admins/category-delete/' + href.name + '/',
                 success: (data) => {
