@@ -107,14 +107,13 @@ class CategoryDeleteView(DeleteView, CustomDispatchMixin):
     success_url = reverse_lazy('admins:admins_category')
 
     # Переопределение метода delete (установка "флага" is_active)
-    def delete(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        # category = CategoryProduct.objects.get(id=self.request['pk'])
-
         if self.object.is_active:
             self.object.is_active = False
         else:
             self.object.is_active = True
+        self.object.save()
 
         context = {
             'categories': CategoryProduct.objects.all()
