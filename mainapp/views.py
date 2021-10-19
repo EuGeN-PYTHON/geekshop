@@ -53,7 +53,7 @@ class ProductList(ListView):
         context = super(ProductList, self).get_context_data(**kwargs)
         context['date'] = datetime.now()
         context['title'] = 'products'
-        context['categories'] = CategoryProduct.objects.all()
+        # context['categories'] = CategoryProduct.objects.all()
         context['products'] = self.get_queryset()
         return context
 
