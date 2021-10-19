@@ -146,14 +146,17 @@ LOGIN_REDIRECT_URL = '/'
 # EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 # EMAIL_USE_SSL = True if os.getenv('EMAIL_USE_SSL') == 'True' else False
 #
-# EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-# EMAIL_FILE_PATH = 'tmp/emails'
+
+DOMAIN_NAME = 'http:/localhost:8000'
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = 'tmp/emails'
 
 # EMAIL_HOST_USER, EMAIL_HOST_PASSWORD = None, None
 #sudo python3 -m smtpd -n -c DebuggingServer localhost:25
 
 #yandex
 # DOMAIN_NAME = 'http:/localhost:8000'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'smtp.yandex.com'
 # EMAIL_PORT = 465
 # EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
@@ -162,10 +165,10 @@ LOGIN_REDIRECT_URL = '/'
 
 
 #gmail
-DOMAIN_NAME = 'http:/localhost:8000'
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER_G')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD_G')
+# DOMAIN_NAME = 'http:/localhost:8000'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER_G')
+# EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD_G')

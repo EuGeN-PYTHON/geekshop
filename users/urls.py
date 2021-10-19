@@ -16,7 +16,7 @@ Including another URLconf
 
 # from django.contrib.auth.views import LogoutView
 from django.urls import path
-from .views import ListLoginView, RegisterFormView, ProfileFormView, Logout, verify
+from .views import ListLoginView, RegisterFormView, ProfileFormView, Logout
 
 app_name = 'users'
 urlpatterns = [
@@ -26,5 +26,5 @@ urlpatterns = [
     path('logout/', Logout.as_view(), name='logout'),
     path('profile/', ProfileFormView.as_view(), name='profile'),
 
-    path('verify/<str:email>/<str:activation_key>/', verify, name='verify')
+    path('verify/<str:email>/<str:activation_key>/', RegisterFormView.verify, name='verify')
 ]
