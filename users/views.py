@@ -81,10 +81,6 @@ class RegisterFormView(FormView, BaseClassContextMixin):
             return redirect(self.cancel_url)
 
 
-
-
-
-
 class ProfileFormView(UpdateView, BaseClassContextMixin, CustomAuthMixin):
     model = User
     template_name = 'users/profile.html'
@@ -160,3 +156,36 @@ class Logout(LogoutView):
 #     except Exception as e:
 #         return HttpResponseRedirect(reverse('index'))
 
+class ForgotPassword(FormView):
+    model = User
+    template_name = 'users/register.html'
+    form_class = UserRegisterForm
+    success_url = reverse_lazy('users:login')
+    cancel_url = reverse_lazy('users:register')
+    title = 'GeekShop - Обновление пароля'
+
+    def send_verify_password(self, request, *args, **kwargs):
+        verify_link = reverse('users:verify', args=[request.email, request.activation_key])
+        subject = f'Для активации учетной записи {request.username} пройдите по ссылке'
+        message = f'Для подтверждения учетной записи {request.username} на портале \n {settings.DOMAIN_NAME}{verify_link}'
+        return send_mail(subject, message, settings.EMAIL_HOST_USER, [request.email], fail_silently=False)
+
+    def verify(self, request, email):
+        try:
+            user = User.objects.get(email=email)
+            user.save()
+            auth.login(request, user)
+            return render(request, 'users/verification.html')
+        except Exception as e:
+            return HttpResponseRedirect(reverse('index'))
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(data=request.POST)
+        if form.is_valid():
+            if self.send_verify_password():
+                form.save()
+                messages.success(request, 'Вы успешно зарегистрировались')
+            return redirect(self.success_url)
+        else:
+            messages.error(request, 'Ошибка регистрации')
+            return redirect(self.cancel_url)
