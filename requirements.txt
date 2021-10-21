@@ -1,0 +1,14 @@
+asgiref==3.4.1
+Basket==1.0
+Cython==0.29.24
+decorator==5.1.0
+delete==0.3.0
+Django==3.2.7
+document==1.0
+kwargs==1.0.1
+Pillow==8.3.2
+python-dotenv==0.19.1
+pytz==2021.1
+quantities==0.12.5
+self==2020.12.3
+sqlparse==0.4.2
