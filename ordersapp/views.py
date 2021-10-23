@@ -9,12 +9,13 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, D
 
 from baskets.models import Basket
 from geekshop.mixin import BaseClassContextMixin
-from ordersapp.forms import OrderItemsForm
+from ordersapp.forms import OrderItemsForm, OrderForm
 from ordersapp.models import Order, OrderItem
 
 
 class OrderList(ListView):
     model = Order
+    form_class = OrderForm
 
     def get_queryset(self):
         return Order.objects.filter(user=self.request.user, is_active=True)
@@ -42,7 +43,7 @@ class OrderCreate(CreateView):
                 for num, form in enumerate(formset.forms):
                     form.initial['product'] = basket_items[num].product
                     form.initial['quantity'] = basket_items[num].quantity
-                    # form.initial['price'] = basket_items[num].price
+                    form.initial['price'] = basket_items[num].product.price
                 basket_items.delete()
             else:
                 formset = OrderFormSet()

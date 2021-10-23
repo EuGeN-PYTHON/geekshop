@@ -3,7 +3,7 @@ from django.urls import path
 
 from admins.views import UserListView, index, UserCreateView, UserUpdateView, UserDeleteView, CategoryListView, \
     CategoryCreateView, CategoryUpdateView, CategoryDeleteView, ProductListView, ProductCreateView, ProductUpdateView, \
-    ProductDeleteView
+    ProductDeleteView, OrderListView, OrderUpdateView, OrderDeleteView
 
 app_name = 'admins'
 urlpatterns = [
@@ -20,5 +20,8 @@ urlpatterns = [
     path('product-create/', ProductCreateView.as_view(), name='admins_product_create'),
     path('product-update/<int:pk>/', ProductUpdateView.as_view(), name='admins_product_update'),
     path('product-delete/<int:pk>/', ProductDeleteView.as_view(), name='admins_product_delete'),
+    path('order/', OrderListView.as_view(), name='admins_order'),
+    path('order-update/<int:pk>/', OrderUpdateView.as_view(), name='admins_order_update'),
+    path('order-delete/<int:pk>/', OrderDeleteView.as_view(), name='admins_order_delete'),
 
 ]
