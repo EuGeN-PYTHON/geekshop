@@ -118,12 +118,14 @@ class CategoryDeleteView(DeleteView, CustomDispatchMixin):
             self.object.is_active = True
         self.object.save()
 
-        context = {
-            'categories': CategoryProduct.objects.all()
-        }
-        result = render_to_string('admins/admins_category_table.html', context, request=self.request)
-        return JsonResponse({'result': result})
-        # return HttpResponseRedirect(self.get_success_url())
+        if request.is_ajax():
+            context = {
+                'categories': CategoryProduct.objects.all()
+            }
+            result = render_to_string('admins/admins_category_table.html', context, request=self.request)
+            return JsonResponse({'result': result})
+        else:
+            return HttpResponseRedirect(self.get_success_url())
 
 
 class ProductListView(ListView, CustomDispatchMixin):
