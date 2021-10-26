@@ -1,14 +1,17 @@
+# coding: utf-8
 from django.db import transaction
 from django.forms import inlineformset_factory
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 
 from baskets.models import Basket
 from geekshop.mixin import BaseClassContextMixin
+from mainapp.models import Product
 from ordersapp.forms import OrderItemsForm, OrderForm
 from ordersapp.models import Order, OrderItem
 
@@ -135,3 +138,14 @@ def payment_result(request):
         order_item.status = Order.PAID
         order_item.save()
     return HttpResponseRedirect(reverse('orders:list'))
+
+
+def update_price(request, id):
+
+    price = Product.objects.get(pk=id).price
+
+    context = {
+        'price': price
+    }
+    result = render_to_string('ordersapp/update_price.html', context)
+    return JsonResponse({'result': result})
