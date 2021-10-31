@@ -1,0 +1,74 @@
+{% extends 'admins/base.html' %}
+
+{% block content %}
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid">
+                <h1 class="mt-4">ЗАКАЗЫ</h1>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-table mr-1"></i>
+                        Заказы
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <div class="admin_category_is_active">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                    <tr>
+                                        <th>ID заказа</th>
+                                        <th>Пользователь</th>
+                                        <th>Активный</th>
+                                        <th>Сумма</th>
+                                        <th>Статус</th>
+                                    </tr>
+                                    </thead>
+                                    <tfoot>
+                                    <tr>
+                                        <th>ID заказа</th>
+                                        <th>Пользователь</th>
+                                        <th>Активный</th>
+                                        <th>Сумма</th>
+                                        <th>Статус</th>
+                                    </tr>
+                                    </tfoot>
+                                    <tbody>
+                                    {% for order in orders %}
+                                        <tr style="background-color: {% if order.is_active == False %} salmon {% else %} white {% endif %}">
+                                            <td><a href="{% url 'admins:admins_order_update' order.pk %}"
+                                            style="color: dodgerblue">{{ order.pk }}</a></td>
+                                            <td>{{ order.user }}</td>
+                                            <td class="text-center">
+                                                {% if order.is_active %}
+                                                    <i class="fas fa-check-circle"></i>
+                                                {% else %}
+                                                    <i class="fas fa-times-circle"></i>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ order.get_total_cost }}</td>
+                                            <td>{{ order.get_status_display }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                    {#                    <div class="card-footer">#}
+                    {#                        <a href="{% url 'admins:admins_category_create'%}">#}
+                    {#                            <button class="btn btn-success">Создать категорию</button>#}
+                    {#                        </a>#}
+                    {#                    </div>#}
+                </div>
+            </div>
+        </main>
+        <footer class="py-4 bg-light mt-auto">
+            <div class="container-fluid">
+                <div class="d-flex align-items-center justify-content-between small">
+                    <div class="text-muted">Copyright &copy; GeekShop 2021</div>
+                </div>
+            </div>
+        </footer>
+    </div>
+{% endblock %}

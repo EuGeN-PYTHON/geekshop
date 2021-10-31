@@ -19,7 +19,7 @@ def save_user_profile(backend, user, response, *args, **kwargs):
         return
 
     api_url = urlunparse(('http', 'api.vk.com', '/method/users.get', None, urlencode(
-        OrderedDict(fields=','.join(('bdate', 'sex', 'about', 'personal', 'photo_max_orig')),
+        OrderedDict(fields=','.join(('bdate', 'sex', 'about', 'personal', 'photo_200')),
                     access_token=response['access_token'], v=5.131)), None))
 
     resp = requests.get(api_url)
@@ -52,17 +52,21 @@ def save_user_profile(backend, user, response, *args, **kwargs):
 
         user.userprofile.language = langs_str
 
-    if data['photo_max_orig']:
-        image_url = data['photo_max_orig']
-        path_dir = 'vk_auth_photo/'
-        root = 'media/'
-        filename_full = image_url.split('/')[-1]
-        filename = filename_full.split('?')[0]
-        photo_file = path_dir + filename
+    if data['photo_200']:
+        image_url = data['photo_200']
         img_data = requests.get(image_url).content
-        with open(root + photo_file, 'wb') as handler:
-            handler.write(img_data)
 
-        user.image = photo_file
+        # path_dir = 'vk_auth_photo/'
+        # root = 'media/'
+        # filename_full = image_url.split('/')[-1]
+        # filename = filename_full.split('?')[0]
+        # photo_file = path_dir + filename
+        # with open(root + photo_file, 'wb') as handler:
+        #     handler.write(img_data)
+
+        path_photo = f'users_image/{user.pk}.png'
+        with open(f'media/{path_photo}', 'wb') as photo:
+            photo.write(img_data)
+        user.image = path_photo
 
     user.save()

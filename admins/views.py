@@ -1,3 +1,4 @@
+
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 
@@ -10,6 +11,8 @@ from admins.forms import UserAdminRegisterForm, UserAdminProfileForm, CategoryAd
     CategoryAdminProfileForm, ProductAdminRegisterForm, ProductAdminProfileForm
 from geekshop.mixin import CustomDispatchMixin
 from mainapp.models import CategoryProduct, Product
+from ordersapp.forms import OrderForm
+from ordersapp.models import Order
 from users.models import User
 
 
@@ -168,4 +171,48 @@ class ProductDeleteView(DeleteView, CustomDispatchMixin):
         self.object = self.get_object()
         self.object.is_active = False
         self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+class OrderListView(ListView, CustomDispatchMixin):
+    model = Order
+    template_name = 'admins/admin-order-read.html'
+
+    context_object_name = 'orders'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(OrderListView, self).get_context_data(**kwargs)
+        context['title'] = 'Админка | Заказы'
+        return context
+
+class OrderUpdateView(UpdateView, CustomDispatchMixin):
+    model = Order
+    template_name = 'admins/admin-order-update-delete.html'
+    form_class = OrderForm
+    success_url = reverse_lazy('admins:admins_order')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(OrderUpdateView, self).get_context_data(**kwargs)
+        context['title'] = 'Админка | Редактирование заказа'
+        return context
+
+
+class OrderDeleteView(DeleteView, CustomDispatchMixin):
+    model = Order
+    template_name = 'admins/admin-order-update-delete.html'
+    success_url = reverse_lazy('admins:admins_order')
+
+    # Переопределение метода delete (установка "флага" is_active)
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.object.is_active:
+            self.object.is_active = False
+        else:
+            self.object.is_active = True
+        self.object.save()
+
+        # context = {
+        #     'categories': CategoryProduct.objects.all()
+        # }
+        # result = render_to_string('admins/admins_category_table.html', context, request=self.request)
+        # return JsonResponse({'result': result})
         return HttpResponseRedirect(self.get_success_url())
