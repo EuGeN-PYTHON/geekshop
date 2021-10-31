@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.views import LoginView, LogoutView
 from django.core.mail import send_mail
+from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404, render
 from django.contrib import messages, auth
@@ -13,7 +14,7 @@ from django.views.generic import FormView, UpdateView
 
 from baskets.models import Basket
 from geekshop.mixin import BaseClassContextMixin, CustomAuthMixin
-from users.forms import UserLoginForm, UserRegisterForm, UserProfileForm
+from users.forms import UserLoginForm, UserRegisterForm, UserProfileForm, UserProfileEditForm
 from users.models import User
 
 
@@ -81,10 +82,6 @@ class RegisterFormView(FormView, BaseClassContextMixin):
             return redirect(self.cancel_url)
 
 
-
-
-
-
 class ProfileFormView(UpdateView, BaseClassContextMixin, CustomAuthMixin):
     model = User
     template_name = 'users/profile.html'
@@ -95,20 +92,19 @@ class ProfileFormView(UpdateView, BaseClassContextMixin, CustomAuthMixin):
     def get_object(self, queryset=None):
         return get_object_or_404(User, pk=self.request.user.pk)
 
-    # def get_context_data(self, **kwargs):
-    #     context = super(ProfileFormView, self).get_context_data(**kwargs)
-    #     context['baskets'] = Basket.objects.filter(user=self.request.user)
-    #     return context
+    def get_context_data(self, **kwargs):
+        context = super(ProfileFormView, self).get_context_data(**kwargs)
+        context['profile'] = UserProfileEditForm(instance=self.request.user.userprofile)
+        return context
 
+    @transaction.atomic
     def post(self, request, *args, **kwargs):
-        form = self.form_class(data=request.POST, files=request.FILES, instance=self.get_object())
-        if form.is_valid():
+        form = UserProfileForm(data=request.POST, files=request.FILES, instance=request.user)
+        profile_form = UserProfileEditForm(request.POST, instance=request.user.userprofile)
+        if form.is_valid() and profile_form.is_valid():
             form.save()
-            messages.success(request, 'Вы успешно обновили профиль')
             return redirect(self.success_url)
-        else:
-            messages.error(request, 'Профиль не сохранен')
-            return redirect(self.success_url)
+        return redirect(self.success_url)
 #
 # @login_required
 # def profile(request):
@@ -160,3 +156,36 @@ class Logout(LogoutView):
 #     except Exception as e:
 #         return HttpResponseRedirect(reverse('index'))
 
+class ForgotPassword(FormView):
+    model = User
+    template_name = 'users/register.html'
+    form_class = UserRegisterForm
+    success_url = reverse_lazy('users:login')
+    cancel_url = reverse_lazy('users:register')
+    title = 'GeekShop - Обновление пароля'
+
+    def send_verify_password(self, request, *args, **kwargs):
+        verify_link = reverse('users:verify', args=[request.email, request.activation_key])
+        subject = f'Для активации учетной записи {request.username} пройдите по ссылке'
+        message = f'Для подтверждения учетной записи {request.username} на портале \n {settings.DOMAIN_NAME}{verify_link}'
+        return send_mail(subject, message, settings.EMAIL_HOST_USER, [request.email], fail_silently=False)
+
+    def verify(self, request, email):
+        try:
+            user = User.objects.get(email=email)
+            user.save()
+            auth.login(request, user)
+            return render(request, 'users/verification.html')
+        except Exception as e:
+            return HttpResponseRedirect(reverse('index'))
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(data=request.POST)
+        if form.is_valid():
+            if self.send_verify_password():
+                form.save()
+                messages.success(request, 'Вы успешно зарегистрировались')
+            return redirect(self.success_url)
+        else:
+            messages.error(request, 'Ошибка регистрации')
+            return redirect(self.cancel_url)
