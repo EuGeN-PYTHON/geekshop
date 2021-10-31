@@ -223,7 +223,7 @@ window.onload = function () {
                         if (isNaN(quantity_arr[orderitem_num])) {
                             quantity_arr[orderitem_num] = 0;
                         }
-                        let price_html = '<span class="orderitems-' + orderitem_num + '-price">' + data.price.toString().replace('.', ',') + '</span> руб';
+                        let price_html = '<span class="orderitems-' + orderitem_num + '-price">' + data.price.toString().replace('.', ',') + ' руб</span>';
                         let current_tr = $('.order_form table').find('tr:eq(' + (orderitem_num + 1) + ')');
                         current_tr.find('td:eq(2)').html(price_html);
                     }
