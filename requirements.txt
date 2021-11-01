@@ -37,3 +37,5 @@ social-auth-core==4.1.0
 sqlparse==0.4.2
 urllib3==1.26.7
 verify==1.1.1
+
+
