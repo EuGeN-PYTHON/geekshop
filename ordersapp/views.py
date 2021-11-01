@@ -140,12 +140,10 @@ def payment_result(request):
     return HttpResponseRedirect(reverse('orders:list'))
 
 
-def update_price(request, id):
+def update_price(request, pk):
+    if request.is_ajax():
+        product = Product.objects.get(pk=pk)
+        if product:
+            return JsonResponse({'price': product.price})
 
-    price = Product.objects.get(pk=id).price
-
-    context = {
-        'price': price
-    }
-    result = render_to_string('ordersapp/update_price.html', context)
-    return JsonResponse({'result': result})
+    return JsonResponse({'price': 0})

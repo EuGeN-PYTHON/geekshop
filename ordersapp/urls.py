@@ -29,6 +29,6 @@ urlpatterns = [
     path('forming_complete/<int:pk>/', order_forming_complete, name='forming_complete'),
     path('payment/result/', payment_result, name='payment_result'),
 
-    path('reform/<int:id>/', update_price, name='update_price'),
+    path('reform/<int:pk>/', update_price, name='update_price'),
 
 ]
