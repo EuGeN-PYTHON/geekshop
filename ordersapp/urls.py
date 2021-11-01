@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.urls import path
 
-from .views import OrderCreate, OrderUpdate, OrderList, OrderDelete, OrderDetail, order_forming_complete
+from .views import OrderCreate, OrderUpdate, OrderList, OrderDelete, OrderDetail, order_forming_complete, \
+    payment_result, update_price
 
-app_name = 'ordersapp'
+app_name = 'orders'
 urlpatterns = [
 
     path('', OrderList.as_view(), name='list'),
@@ -26,5 +27,8 @@ urlpatterns = [
     path('read/<int:pk>/', OrderDetail.as_view(), name='read'),
     path('delete/<int:pk>/', OrderDelete.as_view(), name='delete'),
     path('forming_complete/<int:pk>/', order_forming_complete, name='forming_complete'),
+    path('payment/result/', payment_result, name='payment_result'),
+
+    path('reform/<int:id>/', update_price, name='update_price'),
 
 ]

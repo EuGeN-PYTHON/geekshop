@@ -1,6 +1,6 @@
-window.onload = function(){
-    $('.basket_list').on('click', 'input[type="number"]',function (){
-        let href = event.target;
+window.addEventListener("load", () => {
+    $('.basket_list').on('click', 'input[type="number"]', (e) => {
+        let href = e.target;
         console.log(href.name);
         console.log(href.value);
 
@@ -10,12 +10,12 @@ window.onload = function(){
                 $('.basket_list').html(data.result)
             },
         });
-        event.preventDefault()
+        e.preventDefault()
     });
 
 
-    $('.product_items').on('click', 'button[type="submit"]', function(){
-        let href = event.target;
+    $('.product_items').on('click', 'button[type="submit"]', (e) => {
+        let href = e.target;
         console.log(href.name);
 
         $.ajax({
@@ -26,6 +26,7 @@ window.onload = function(){
                 $('.product_items').html(data.result)
             },
         });
-        event.preventDefault()
+        e.preventDefault()
     });
-};
+
+});
