@@ -45,8 +45,7 @@ class Basket(models.Model):
         baskets = self.get_items_cached
         return sum(basket.quantity for basket in baskets)
 
-    # @cached_property
-    @property
+    @cached_property
     def get_items_cached(self):
         return self.user.basket.select_related()
 
