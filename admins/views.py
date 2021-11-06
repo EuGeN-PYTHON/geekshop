@@ -64,7 +64,10 @@ class UserDeleteView(DeleteView, CustomDispatchMixin):
     # Переопределение метода delete (установка "флага" is_active)
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
-        self.object.is_active = False
+        if self.object.is_active:
+            self.object.is_active = False
+        else:
+            self.object.is_active = True
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
 
@@ -171,7 +174,10 @@ class ProductDeleteView(DeleteView, CustomDispatchMixin):
     # Переопределение метода delete (установка "флага" is_active)
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
-        self.object.is_active = False
+        if self.object.is_active:
+            self.object.is_active = False
+        else:
+            self.object.is_active = True
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
 

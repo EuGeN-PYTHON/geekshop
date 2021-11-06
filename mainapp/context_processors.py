@@ -4,7 +4,7 @@ from baskets.models import Basket
 from mainapp.models import Product, CategoryProduct
 from ordersapp.models import Order
 
-
+#
 def basket(request):
     baskets_list = []
     if request.user.is_authenticated:
@@ -29,9 +29,9 @@ def category(request):
     return {
         'categories': categories_list,
     }
-
-def order(request):
-    order_list = Order.objects.all().select_related()
-    return {
-        'orders': order_list,
-    }
+#
+# def order(request):
+#     order_list = Order.objects.all().select_related()
+#     return {
+#         'orders': order_list,
+#     }
