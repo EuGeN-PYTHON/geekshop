@@ -20,14 +20,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2)
     quantity = models.PositiveIntegerField(default=0)
     category = models.ForeignKey(CategoryProduct, on_delete=models.CASCADE)
-    is_active = models.BooleanField(
-        'active',
-        default=True,
-        help_text=(
-            'Designates whether this user should be treated as active. '
-            'Unselect this instead of deleting accounts.'
-        ),
-    )
+    is_active = models.BooleanField('active', default=True, db_index=True)
 
     def __str__(self):
         return f' {self.name} | {self.category}'

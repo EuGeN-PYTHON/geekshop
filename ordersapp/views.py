@@ -142,6 +142,7 @@ def payment_result(request):
 
 def update_price(request, pk):
     if request.is_ajax():
+        # product = Product.objects.get(pk=pk).select_related()
         product = Product.objects.get(pk=pk)
         if product:
             return JsonResponse({'price': product.price})
