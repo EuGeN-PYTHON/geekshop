@@ -1,3 +1,5 @@
+from django.views.decorators.cache import cache_page
+
 from baskets.models import Basket
 from mainapp.models import Product, CategoryProduct
 from ordersapp.models import Order
@@ -10,15 +12,17 @@ def basket(request):
     return {
         'baskets': baskets_list,
     }
+#
+# def total_quantity_baskets(request):
+#     return basket(request)['baskets'].quantity
 
-def total_quantity_baskets(request):
-    return basket(request)['baskets'].quantity
 
 def product(request):
     products_list = Product.objects.all().select_related()
     return {
         'products': products_list,
     }
+
 
 def category(request):
     categories_list = CategoryProduct.objects.all().select_related()
