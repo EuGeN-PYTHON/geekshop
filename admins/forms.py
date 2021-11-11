@@ -31,14 +31,18 @@ class UserAdminProfileForm(UserProfileForm):
 
 
 class CategoryAdminRegisterForm(forms.ModelForm):
+    discount = forms.IntegerField(widget=forms.NumberInput(), label='скидка', required=False, min_value=0, max_value=99,
+                                  initial=0)
+
     class Meta:
         model = CategoryProduct
-        fields = ('name', 'description')
+        fields = ('name', 'description', 'discount')
 
-    def __init__(self,*args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(CategoryAdminRegisterForm, self).__init__(*args, **kwargs)
         self.fields['name'].widget.attrs['placeholder'] = 'Введите наименование категории'
         self.fields['description'].widget.attrs['placeholder'] = 'Введите описание категории'
+        self.fields['discount'].widget.attrs['placeholder'] = 'Введите размер скидки'
         for field_name, field in self.fields.items():
             if field_name == 'image':
                 field.widget.attrs['class'] = 'form-control'
@@ -47,14 +51,18 @@ class CategoryAdminRegisterForm(forms.ModelForm):
 
 
 class CategoryAdminProfileForm(forms.ModelForm):
+    discount = forms.IntegerField(widget=forms.NumberInput(), label='скидка', required=False, min_value=0, max_value=99,
+                                  initial=0)
+
     class Meta:
         model = CategoryProduct
-        fields = ('name', 'description')
+        fields = ('name', 'description', 'discount')
 
     def __init__(self,*args, **kwargs):
         super(CategoryAdminProfileForm, self).__init__(*args, **kwargs)
         self.fields['name'].widget.attrs['placeholder'] = 'Введите наименование категории'
         self.fields['description'].widget.attrs['placeholder'] = 'Введите описание категории'
+        self.fields['discount'].widget.attrs['placeholder'] = 'Введите размер скидки'
         for field_name, field in self.fields.items():
             if field_name == 'image':
                 field.widget.attrs['class'] = 'form-control'

@@ -1,4 +1,5 @@
-
+from django.db import connection
+from django.db.models import F
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 
@@ -19,6 +20,10 @@ from users.models import User
 def index(request):
     return render(request, 'admins/admin.html')
 
+def db_profile_by_type(prefix, type, queries):
+    update_queries = list(filter(lambda x: type in x['sql'], queries))
+    print(f'db_profile {type} for {prefix}:')
+    [print(query['sql']) for query in update_queries]
 
 class UserListView(ListView, CustomDispatchMixin):
     model = User
@@ -36,7 +41,6 @@ class UserCreateView(CreateView, CustomDispatchMixin):
     template_name = 'admins/admin-users-create.html'
     form_class = UserAdminRegisterForm
     success_url = reverse_lazy('admins:admins_user')
-
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(UserCreateView, self).get_context_data(**kwargs)
@@ -106,6 +110,15 @@ class CategoryUpdateView(UpdateView, CustomDispatchMixin):
         context['title'] = 'Админка | Редактирование'
         return context
 
+    def form_valid(self, form):
+        if 'discount' in form.cleaned_data:
+            discount = form.cleaned_data['discount']
+            if discount:
+                print(f'применяется скидка {discount} % к товарам категории {self.object.name}')
+                self.object.product_set.update(price=F('price') * (1 - discount / 100))
+                db_profile_by_type(self.__class__, 'UPDATE', connection.queries)
+        return HttpResponseRedirect(self.get_success_url())
+
 
 class CategoryDeleteView(DeleteView, CustomDispatchMixin):
     model = CategoryProduct
@@ -117,6 +130,7 @@ class CategoryDeleteView(DeleteView, CustomDispatchMixin):
         self.object = self.get_object()
         if self.object.is_active:
             self.object.is_active = False
+            self.object.product_set.update(is_active=False)
         else:
             self.object.is_active = True
         self.object.save()
@@ -180,6 +194,7 @@ class ProductDeleteView(DeleteView, CustomDispatchMixin):
             self.object.is_active = True
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
+
 
 class OrderListView(ListView, CustomDispatchMixin):
     model = Order
