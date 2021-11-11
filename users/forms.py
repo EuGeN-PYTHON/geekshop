@@ -23,6 +23,7 @@ class UserLoginForm(AuthenticationForm):
 
 
 class UserRegisterForm(UserCreationForm):
+
     class Meta:
         model = User
         fields = ('username', 'email', 'age', 'first_name', 'last_name', 'password1', 'password2', 'image')

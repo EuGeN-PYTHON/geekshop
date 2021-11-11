@@ -22,6 +22,19 @@ class ListLoginView(LoginView, BaseClassContextMixin):
     template_name = 'users/login.html'
     form_class = UserLoginForm
     title = 'GeekShop - Авторизация'
+    success_url = 'index'
+
+    def get(self, request, *args, **kwargs):
+        sup = super(ListLoginView, self).get(request, *args, **kwargs)
+        if request.user.is_authenticated:
+            return HttpResponseRedirect(reverse_lazy(self.success_url))
+        return sup
+
+    def get_context_data(self, **kwargs):
+        context = super(ListLoginView, self).get_context_data(**kwargs)
+        context['title'] = 'GeekShop - Авторизация'
+        return context
+
 
 #
 # def login(request):
@@ -49,26 +62,32 @@ class RegisterFormView(FormView, BaseClassContextMixin):
     form_class = UserRegisterForm
     success_url = reverse_lazy('users:login')
     cancel_url = reverse_lazy('users:register')
-    title = 'GeekShop - Регистрация'
 
-    def send_verify_link(self, request, *args, **kwargs):
-        verify_link = reverse('users:verify', args=[request.email, request.activation_key])
-        subject = f'Для активации учетной записи {request.username} пройдите по ссылке'
-        message = f'Для подтверждения учетной записи {request.username} на портале \n {settings.DOMAIN_NAME}{verify_link}'
-        return send_mail(subject, message, settings.EMAIL_HOST_USER, [request.email], fail_silently=False)
+    # title = 'GeekShop - Регистрация'
 
-    def verify(request, email, activation_key):
-        try:
-            user = User.objects.get(email=email)
-            if user and user.activation_key == activation_key and not user.is_activation_key_expired():
-                user.activation_key = ''
-                user.activation_key_created = None
-                user.is_active = True
-                user.save()
-                auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-            return render(request, 'users/verification.html')
-        except Exception as e:
-            return HttpResponseRedirect(reverse('index'))
+    def get_context_data(self, **kwargs):
+        context = super(RegisterFormView, self).get_context_data(**kwargs)
+        context['title'] = 'GeekShop - Регистрация'
+        return context
+
+    # def send_verify_link(self, request, *args, **kwargs):
+    #     verify_link = reverse('users:verify', args=[request.email, request.activation_key])
+    #     subject = f'Для активации учетной записи {request.username} пройдите по ссылке'
+    #     message = f'Для подтверждения учетной записи {request.username} на портале \n {settings.DOMAIN_NAME}{verify_link}'
+    #     return send_mail(subject, message, settings.EMAIL_HOST_USER, [request.email], fail_silently=False)
+
+    # def verify(request, email, activation_key):
+    #     try:
+    #         user = User.objects.get(email=email)
+    #         if user and user.activation_key == activation_key and not user.is_activation_key_expired():
+    #             user.activation_key = ''
+    #             user.activation_key_created = None
+    #             user.is_active = True
+    #             user.save()
+    #             auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+    #         return render(request, 'users/verification.html')
+    #     except Exception as e:
+    #         return HttpResponseRedirect(reverse('index'))
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(data=request.POST)
@@ -81,11 +100,33 @@ class RegisterFormView(FormView, BaseClassContextMixin):
             messages.error(request, 'Ошибка регистрации')
             return redirect(self.cancel_url)
 
+    @staticmethod
+    def send_verify_link(user):
+        verify_link = reverse('users:verify', args=[user.email, user.activation_key])
+        subject = f'Для активации учетной записи {user.username} пройдите по ссылке'
+        message = f'Для подтверждения учетной записи {user.username} на портале \n {settings.DOMAIN_NAME}{verify_link}'
+        return send_mail(subject, message, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
+
+    @staticmethod
+    def verify(request, email, activation_key):
+        try:
+            user = User.objects.get(email=email)
+            if user and user.activation_key == activation_key and not user.is_activation_key_expired():
+                user.activation_key = ''
+                user.activation_key_expires = None
+                user.is_active = True
+                user.save()
+                auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            return render(request, 'users/verification.html')
+        except Exception as e:
+            return HttpResponseRedirect(reverse('index'))
+
 
 class ProfileFormView(UpdateView, BaseClassContextMixin, CustomAuthMixin):
     model = User
     template_name = 'users/profile.html'
     form_class = UserProfileForm
+    form_class_second = UserProfileEditForm
     success_url = reverse_lazy('users:profile')
     title = 'GeekShop - Профиль'
 
@@ -105,6 +146,8 @@ class ProfileFormView(UpdateView, BaseClassContextMixin, CustomAuthMixin):
             form.save()
             return redirect(self.success_url)
         return redirect(self.success_url)
+
+
 #
 # @login_required
 # def profile(request):
@@ -134,7 +177,6 @@ class Logout(LogoutView):
 # def logout(request):
 #     auth.logout(request)
 #     return HttpResponseRedirect(reverse('index'))
-
 
 
 # def send_verify_link(user):
