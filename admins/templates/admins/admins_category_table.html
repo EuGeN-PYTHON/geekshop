@@ -3,6 +3,7 @@
         <thead>
         <tr>
             <th>Наименование категории</th>
+            <th>Скидка</th>
             <th>Описание</th>
             <th>Активный</th>
         </tr>
@@ -10,6 +11,7 @@
         <tfoot>
         <tr>
             <th>Наименование категории</th>
+            <th>Скидка</th>
             <th>Описание</th>
             <th>Активный</th>
         </tr>
@@ -19,7 +21,9 @@
             <tr style="background-color: {% if category.is_active == False %} salmon {% else %} white {% endif %}">
                 <td><a href="{% url 'admins:admins_category_update' category.id %}"
                        style="color: dodgerblue">{{ category.name }}</a></td>
+                <td>{{ category.discount }}</td>
                 <td>{{ category.description }}</td>
+
 {#                <td class="text-center">#}
 {#                    {% if category.is_active %}#}
 {#                        <i class="fas fa-check-circle"></i>#}
