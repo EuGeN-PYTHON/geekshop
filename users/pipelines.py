@@ -52,9 +52,9 @@ def save_user_profile(backend, user, response, *args, **kwargs):
 
         user.userprofile.language = langs_str
 
-    if data['photo_200']:
-        image_url = data['photo_200']
-        img_data = requests.get(image_url).content
+    # if data['photo_200']:
+    #     image_url = data['photo_200']
+    #     img_data = requests.get(image_url).content
 
         # path_dir = 'vk_auth_photo/'
         # root = 'media/'
@@ -64,9 +64,18 @@ def save_user_profile(backend, user, response, *args, **kwargs):
         # with open(root + photo_file, 'wb') as handler:
         #     handler.write(img_data)
 
-        path_photo = f'users_image/{user.pk}.png'
-        with open(f'media/{path_photo}', 'wb') as photo:
-            photo.write(img_data)
-        user.image = path_photo
+        # path_photo = f'users_image/{user.pk}.png'
+        # with open(f'media/{path_photo}', 'wb') as photo:
+        #     photo.write(img_data)
+        # user.image = path_photo
+
+        if data['photo_200']:
+            photo_link = data['photo_200']
+            photo_response = requests.get(photo_link)
+            path_photo = f'users_image/{user.pk}.jpg'
+            with open(f'geekshop/media/{path_photo}', 'wb') as photo:
+                photo.write(photo_response.content)
+            user.image = path_photo
+        user.save()
 
     user.save()
